@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Chapter 14 · Maps &amp; Directions</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ocean:#1565C0;--beach:#F9A825;--forest:#2E7D32;--river:#0288D1;
+  --sand:#F5E8C8;--parch:#EDD9A3;--parch2:#E0C878;
+  --red:#C0392B;--gold:#B8860B;
+  --ink:#1A0A04;--ink2:#4A2A10;--ink3:#8A6030;--rule:#C8A060;
+  --sans:'Syne',sans-serif;--serif:'Instrument Serif',serif;--mono:'Space Mono',monospace;
+}
+html,body{width:100%;min-height:100vh;background:var(--sand);color:var(--ink);font-family:var(--sans);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.04;
+  background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40 L40 0' stroke='%23876010' stroke-width='0.5'/%3E%3C/svg%3E")}
+.header{background:var(--ocean);padding:0 22px;display:flex;align-items:center;gap:16px;height:56px;
+  border-bottom:3px solid #0D47A1;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.header-title{font-family:var(--serif);font-size:21px;color:#F0F8FF;font-style:italic}
+.header-sub{font-family:var(--mono);font-size:10px;color:rgba(240,248,255,0.5);letter-spacing:1.5px;text-transform:uppercase}
+.header-tabs{margin-left:auto;display:flex;gap:0;background:rgba(0,0,0,0.25);border-radius:8px;padding:3px}
+.tab{padding:7px 14px;font-family:var(--mono);font-size:11px;color:rgba(240,248,255,0.5);cursor:pointer;border-radius:6px;transition:.2s;border:none;background:none}
+.tab.on{background:var(--sand);color:var(--ink);font-weight:700}
+.tab:hover:not(.on){color:rgba(240,248,255,0.85)}
+.main{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+.pnl{display:none}.pnl.on{display:block}
+.board{background:var(--parch);border:3px solid var(--rule);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18)}
+.board-head{background:var(--parch2);padding:12px 18px;border-bottom:2px solid var(--rule);font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.board-body{padding:16px 18px}
+/* MAP CANVAS */
+#map-canvas{display:block;width:100%;height:auto;cursor:pointer;touch-action:none;border:3px solid var(--rule);border-radius:8px}
+/* HOVER TOOLTIP */
+.map-tooltip{background:rgba(245,232,200,0.96);border:2px solid var(--rule);border-radius:8px;padding:8px 14px;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink);margin-bottom:12px;min-height:36px;display:flex;align-items:center;gap:8px}
+/* CHALLENGES */
+.challenge{background:var(--sand);border:2px solid var(--rule);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.ch-tag{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.ch-q{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink);margin-bottom:12px;line-height:1.5}
+.ch-opts{display:flex;gap:8px;flex-wrap:wrap}
+.ch-opt{padding:9px 18px;background:var(--parch);border:2px solid var(--rule);border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;cursor:pointer;transition:.2s;color:var(--ink2)}
+.ch-opt:hover{border-color:var(--ocean);background:#E8F0FF}
+.ch-opt.correct{background:#DCFCE7;border-color:#16A34A;color:#14532D;animation:cpop .35s}
+.ch-opt.wrong{background:#FEE2E2;border-color:#DC2626;color:#7F1D1D;animation:cshk .35s}
+.ch-fb{margin-top:10px;font-family:var(--serif);font-style:italic;font-size:14px;min-height:20px}
+.ch-fb.ok{color:#16A34A}.ch-fb.no{color:var(--red)}
+@keyframes cpop{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes cshk{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.next-btn{margin-top:12px;background:var(--ocean);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer}
+/* DIRECTIONS */
+.dir-card{background:var(--sand);border:2px solid var(--rule);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.compass-wrap{display:flex;justify-content:center;margin-bottom:16px}
+/* SCALE */
+.scale-wrap{background:var(--parch2);border:2px solid var(--rule);border-radius:8px;padding:14px 18px;margin-bottom:12px}
+/* PRACTICE */
+.prac-card{background:var(--parch);border:2px solid var(--rule);border-radius:12px;padding:20px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.prac-q{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink);margin-bottom:14px;line-height:1.6}
+.ans-opts{display:flex;gap:8px;flex-wrap:wrap}
+.ans-opt{padding:10px 18px;background:var(--parch2);border:2px solid var(--rule);border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;cursor:pointer;transition:.2s;color:var(--ink)}
+.ans-opt:hover{border-color:var(--ocean);background:#E8F0FF}
+.ans-opt.correct{background:#DCFCE7;border-color:#16A34A;color:#14532D;animation:cpop .35s}
+.ans-opt.wrong{background:#FEE2E2;border-color:#DC2626;color:#7F1D1D;animation:cshk .35s}
+.pq-fb{min-height:22px;margin-top:10px;font-family:var(--serif);font-style:italic;font-size:14px}
+.pq-fb.ok{color:#16A34A}.pq-fb.no{color:var(--red)}
+.score-pill{background:var(--parch2);border:2px solid var(--rule);border-radius:8px;padding:8px 16px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink2);display:inline-block;margin-bottom:12px}
+@media(max-width:600px){.header{height:auto;padding:10px 16px;flex-wrap:wrap;gap:8px}.header-tabs{width:100%;justify-content:center}}
+</style>
+</head>
+<body>
+<div class="header">
+  <svg width="34" height="34" viewBox="0 0 34 34" style="flex-shrink:0">
+    <circle cx="17" cy="17" r="13" fill="none" stroke="#F0F8FF" stroke-width="1.5"/>
+    <polygon points="17,6 19,14 17,12 15,14" fill="#F0F8FF"/>
+    <text x="17" y="11" text-anchor="middle" font-family="serif" font-size="5" fill="#F0F8FF">N</text>
+    <line x1="17" y1="17" x2="17" y2="26" stroke="#F0F8FF" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="17" cy="17" r="2" fill="#F9A825"/>
+  </svg>
+  <div>
+    <div class="header-title">Island Explorer</div>
+    <div class="header-sub">Chapter 14 · Maps &amp; Directions</div>
+  </div>
+  <div class="header-tabs">
+    <button class="tab on" onclick="switchTab('grid')">Grid Map</button>
+    <button class="tab" onclick="switchTab('directions')">Directions</button>
+    <button class="tab" onclick="switchTab('scale')">Scale</button>
+    <button class="tab" onclick="switchTab('practice')">Practice</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- GRID MAP TAB -->
+<div class="pnl on" id="pnl-grid">
+  <div class="board">
+    <div class="board-head">
+      <span>🗺️ Treasure Island</span>
+      <span style="color:var(--ink2);font-size:11px;text-transform:none;letter-spacing:0;font-family:var(--serif);font-style:italic">Hover or tap any square to see its grid reference</span>
+    </div>
+    <div class="board-body">
+      <div class="map-tooltip" id="map-tooltip">
+        <span style="font-size:18px">👆</span> Move your finger over the map to explore
+      </div>
+      <canvas id="map-canvas" width="540" height="450"></canvas>
+    </div>
+  </div>
+
+  <div class="board">
+    <div class="board-head">🔍 Grid Reference Challenges</div>
+    <div class="board-body">
+      <div class="score-pill">Score: <span id="grid-score">0</span> / <span id="grid-total">0</span></div>
+      <div id="grid-challenge"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIRECTIONS TAB -->
+<div class="pnl" id="pnl-directions">
+  <div class="board">
+    <div class="board-head">🧭 Compass Directions</div>
+    <div class="board-body">
+      <div style="font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink2);margin-bottom:16px;line-height:1.7">
+        A compass shows North, South, East and West. North is always towards the top of the map. Use the map and compass below to answer each question.
+      </div>
+      <div class="compass-wrap">
+        <canvas id="compass-canvas" width="180" height="180" style="width:180px;height:180px"></canvas>
+      </div>
+      <div id="dir-challenges"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCALE TAB -->
+<div class="pnl" id="pnl-scale">
+  <div class="board">
+    <div class="board-head">📏 Map Scale</div>
+    <div class="board-body">
+      <div style="font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink2);margin-bottom:16px;line-height:1.7">
+        A scale tells you how distances on the map relate to real life. On this map, <strong style="font-style:normal">1 cm = 2 km</strong>. Use the ruler below to measure and answer.
+      </div>
+      <div class="scale-wrap">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px">Map Scale Ruler: 1 cm = 2 km</div>
+        <canvas id="ruler-canvas" width="400" height="44" style="display:block;max-width:100%;border-radius:4px"></canvas>
+      </div>
+      <div id="scale-challenges"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div class="pnl" id="pnl-practice">
+  <div class="prac-card">
+    <div class="prac-q" id="pq-text">Loading…</div>
+    <div class="ans-opts" id="pq-opts"></div>
+    <div class="pq-fb" id="pq-fb"></div>
+    <button class="next-btn" onclick="nextPQ()">Next question</button>
+  </div>
+</div>
+
+</div>
+<script>
+// ── MAP DATA ─────────────────────────────────────────────────
+const COLS=9,ROWS=8;
+const LETTERS='ABCDEFGHI';
+// Terrain: 0=ocean 1=sand 2=forest 3=river
+const T=[
+  [0,0,0,0,0,0,0,0,0],
+  [0,0,1,1,2,2,1,0,0],
+  [0,1,2,2,3,2,2,1,0],
+  [0,1,2,3,3,2,2,2,1],
+  [0,1,2,2,3,2,2,1,0],
+  [0,0,1,2,2,2,1,0,0],
+  [0,0,0,1,1,1,0,0,0],
+  [0,0,0,0,0,0,0,0,0],
+];
+const TC={'0':'#1565C0','1':'#F9A825','2':'#2E7D32','3':'#0288D1'};
+
+// Landmarks: [col,row,emoji,name,shortName]
+const LM=[
+  [1,5,'\u2693','Ship Landing','Ship'],
+  [4,2,'\u26F0','Rocky Peak','Peak'],
+  [2,3,'\uD83C\uDFD8','Village of Mango','Village'],
+  [6,2,'\uD83D\uDED5','Forest Temple','Temple'],
+  [7,3,'\uD83D\uDCB0','Treasure Cove','Treasure'],
+];
+
+const mapCvs=document.getElementById('map-canvas');
+const mapCtx=mapCvs.getContext('2d');
+let CELL=54;
+
+function initMap(){
+  const mw=Math.min(mapCvs.parentElement.offsetWidth||540,540);
+  CELL=Math.floor(mw/COLS);
+  mapCvs.width=CELL*COLS;mapCvs.height=CELL*ROWS;
+  drawMap(null);
+}
+
+function drawMap(highlightKey){
+  const W=mapCvs.width,H=mapCvs.height;
+  // Terrain
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    mapCtx.fillStyle=TC[T[r][c]];
+    mapCtx.fillRect(c*CELL,r*CELL,CELL,CELL);
+    // texture
+    if(T[r][c]===2){
+      mapCtx.fillStyle='rgba(0,80,0,0.1)';
+      mapCtx.beginPath();mapCtx.arc(c*CELL+CELL*.35,r*CELL+CELL*.35,CELL*.18,0,Math.PI*2);mapCtx.fill();
+    }
+  }
+  // Grid lines
+  mapCtx.strokeStyle='rgba(0,0,0,0.15)';mapCtx.lineWidth=0.8;mapCtx.setLineDash([]);
+  for(let c=0;c<=COLS;c++){mapCtx.beginPath();mapCtx.moveTo(c*CELL,0);mapCtx.lineTo(c*CELL,H);mapCtx.stroke()}
+  for(let r=0;r<=ROWS;r++){mapCtx.beginPath();mapCtx.moveTo(0,r*CELL);mapCtx.lineTo(W,r*CELL);mapCtx.stroke()}
+  // Grid labels - letters along bottom, numbers along left
+  mapCtx.fillStyle='rgba(255,255,255,0.85)';mapCtx.font='bold '+Math.round(CELL*.22)+'px "Space Mono",monospace';
+  mapCtx.textAlign='center';mapCtx.textBaseline='middle';
+  for(let c=0;c<COLS;c++)mapCtx.fillText(LETTERS[c],c*CELL+CELL/2,H-CELL*.12);
+  mapCtx.textAlign='right';
+  for(let r=0;r<ROWS;r++)mapCtx.fillText(r+1,CELL*.18,r*CELL+CELL/2);
+  // Highlight square
+  if(highlightKey){
+    const[hc,hr]=highlightKey.split(',').map(Number);
+    mapCtx.fillStyle='rgba(255,255,100,0.28)';
+    mapCtx.fillRect(hc*CELL,hr*CELL,CELL,CELL);
+    mapCtx.strokeStyle='#F9A825';mapCtx.lineWidth=2.5;
+    mapCtx.strokeRect(hc*CELL+1,hr*CELL+1,CELL-2,CELL-2);
+  }
+  // Landmarks
+  LM.forEach(([lc,lr,em,name,short])=>{
+    const x=lc*CELL+CELL/2,y=lr*CELL+CELL/2;
+    // Background circle
+    mapCtx.fillStyle='rgba(245,232,200,0.88)';
+    mapCtx.beginPath();mapCtx.arc(x,y,CELL*.38,0,Math.PI*2);mapCtx.fill();
+    mapCtx.strokeStyle='rgba(139,96,16,0.6)';mapCtx.lineWidth=1.5;mapCtx.stroke();
+    // Emoji
+    mapCtx.font=Math.round(CELL*.38)+'px serif';mapCtx.textAlign='center';mapCtx.textBaseline='middle';
+    mapCtx.fillText(em,x,y);
+    // Label
+    mapCtx.font='bold '+Math.round(CELL*.17)+'px "Space Mono",monospace';
+    const tw=mapCtx.measureText(short).width;
+    mapCtx.fillStyle='rgba(0,0,0,0.72)';
+    mapCtx.beginPath();mapCtx.roundRect(x-tw/2-3,lr*CELL+CELL-.5-13,tw+6,13,2);mapCtx.fill();
+    mapCtx.fillStyle='#fff';mapCtx.textBaseline='top';
+    mapCtx.fillText(short,x,lr*CELL+CELL-1-13);
+  });
+  // Compass rose (top right)
+  drawCompassMini(W-CELL*.7,CELL*.7,CELL*.5);
+}
+
+function drawCompassMini(cx,cy,r){
+  mapCtx.fillStyle='rgba(245,232,200,0.9)';mapCtx.beginPath();mapCtx.arc(cx,cy,r,0,Math.PI*2);mapCtx.fill();
+  mapCtx.strokeStyle='rgba(139,96,16,0.5)';mapCtx.lineWidth=1.5;mapCtx.stroke();
+  const dirs=[['N',-Math.PI/2,'#C0392B'],['S',Math.PI/2,'#1A0A04'],['E',0,'#1A0A04'],['W',Math.PI,'#1A0A04']];
+  dirs.forEach(([l,a,col])=>{
+    mapCtx.fillStyle=col;mapCtx.font='bold '+Math.round(r*.38)+'px "Space Mono",monospace';
+    mapCtx.textAlign='center';mapCtx.textBaseline='middle';
+    mapCtx.fillText(l,cx+Math.cos(a)*r*.6,cy+Math.sin(a)*r*.6);
+  });
+  mapCtx.fillStyle='#C0392B';mapCtx.beginPath();mapCtx.moveTo(cx,cy-r*.45);mapCtx.lineTo(cx-4,cy);mapCtx.lineTo(cx+4,cy);mapCtx.closePath();mapCtx.fill();
+  mapCtx.fillStyle='#555';mapCtx.beginPath();mapCtx.moveTo(cx,cy+r*.45);mapCtx.lineTo(cx-4,cy);mapCtx.lineTo(cx+4,cy);mapCtx.closePath();mapCtx.fill();
+  mapCtx.fillStyle='#1A0A04';mapCtx.beginPath();mapCtx.arc(cx,cy,3,0,Math.PI*2);mapCtx.fill();
+}
+
+// Map interaction
+function getMapCell(e){
+  const rect=mapCvs.getBoundingClientRect();
+  const sx=mapCvs.width/rect.width;
+  const src=e.touches?e.touches[0]:e;
+  const c=Math.floor((src.clientX-rect.left)*sx/CELL);
+  const r=Math.floor((src.clientY-rect.top)*sx/CELL);
+  if(c<0||c>=COLS||r<0||r>=ROWS)return null;
+  return{c,r,key:c+','+r};
+}
+
+function updateTooltip(c,r){
+  const ref=LETTERS[c]+(r+1);
+  const lm=LM.find(([lc,lr])=>lc===c&&lr===r);
+  const terrain=['ocean','sand/beach','forest','river'][T[r][c]];
+  const tt=document.getElementById('map-tooltip');
+  if(lm){
+    tt.innerHTML='<span style="font-size:20px">'+lm[2]+'</span> <strong>'+lm[3]+'</strong> — grid square <span style="color:var(--ocean)">'+ref+'</span>';
+  } else {
+    tt.innerHTML='<span style="font-size:18px">'+(T[r][c]===0?'\uD83C\uDF0A':T[r][c]===1?'\uD83C\uDFD6':T[r][c]===2?'\uD83C\uDF32':'\uD83D\uDCA7')+'</span> Terrain: '+terrain+' — grid square <span style="color:var(--ocean)">'+ref+'</span>';
+  }
+}
+
+mapCvs.addEventListener('mousemove',e=>{
+  const cell=getMapCell(e);
+  if(cell){updateTooltip(cell.c,cell.r);drawMap(cell.key);}
+});
+mapCvs.addEventListener('click',e=>{
+  const cell=getMapCell(e);
+  if(cell)checkGridAnswer(cell.c,cell.r);
+});
+mapCvs.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const cell=getMapCell(e);
+  if(cell){updateTooltip(cell.c,cell.r);drawMap(cell.key);checkGridAnswer(cell.c,cell.r);}
+},{passive:false});
+mapCvs.addEventListener('mouseleave',()=>drawMap(null));
+
+// ── GRID CHALLENGES ───────────────────────────────────────────
+const GRID_CHS=[
+  {q:'Where is the Ship Landing? Tap its square on the map.',target:[1,5],ans:'B6'},
+  {q:'What grid square is the Treasure Cove in? Tap it!',target:[7,3],ans:'H4'},
+  {q:'Tap the Forest Temple on the map.',target:[6,2],ans:'G3'},
+  {q:'Find the Village of Mango — tap its square.',target:[2,3],ans:'C4'},
+  {q:'Where is the Rocky Peak? Tap the correct square.',target:[4,2],ans:'E3'},
+  {q:'Tap any FOREST square (green terrain).',targetTerrain:2,ans:'forest'},
+  {q:'Tap any RIVER square (blue water).',targetTerrain:3,ans:'river'},
+  {q:'Tap the square at grid reference D5.',target:[3,4],ans:'D5'},
+  {q:'Tap the square at grid reference F2.',target:[5,1],ans:'F2'},
+];
+let gridIdx=0,gridScore=0,gridTotal=0;
+let awaitingGridTap=false;
+
+function nextGridChallenge(){
+  if(gridIdx>=GRID_CHS.length)gridIdx=0;
+  const ch=GRID_CHS[gridIdx];
+  awaitingGridTap=true;
+  const c=document.getElementById('grid-challenge');
+  c.innerHTML='<div class="challenge"><div class="ch-tag">Challenge '+(gridIdx+1)+'</div><div class="ch-q">'+ch.q+'</div><div class="ch-fb" id="gfb"></div></div>';
+}
+
+function checkGridAnswer(c,r){
+  if(!awaitingGridTap)return;
+  const ch=GRID_CHS[gridIdx];
+  const fb=document.getElementById('gfb');
+  if(!fb)return;
+  let correct=false;
+  if(ch.target&&ch.target[0]===c&&ch.target[1]===r)correct=true;
+  if(ch.targetTerrain!==undefined&&T[r][c]===ch.targetTerrain)correct=true;
+  gridTotal++;
+  document.getElementById('grid-total').textContent=gridTotal;
+  if(correct){
+    gridScore++;
+    document.getElementById('grid-score').textContent=gridScore;
+    fb.textContent='\u2713 Correct! That is '+LETTERS[c]+(r+1)+'.';
+    fb.className='ch-fb ok';
+    awaitingGridTap=false;
+    setTimeout(()=>{gridIdx++;nextGridChallenge();},1400);
+  } else {
+    fb.textContent='\u2717 Not quite — that is '+LETTERS[c]+(r+1)+'. Look at the letters along the bottom and numbers on the left.';
+    fb.className='ch-fb no';
+  }
+}
+
+// ── COMPASS / DIRECTION CHALLENGES ───────────────────────────
+const compassCvs=document.getElementById('compass-canvas');
+const compassCtx=compassCvs.getContext('2d');
+
+function drawCompass(){
+  const cx=90,cy=90,r=80;
+  compassCtx.fillStyle='.#FFF8E8';compassCtx.clearRect(0,0,180,180);
+  // Face
+  compassCtx.fillStyle='#F5EDD8';compassCtx.beginPath();compassCtx.arc(cx,cy,r,0,Math.PI*2);compassCtx.fill();
+  compassCtx.strokeStyle='#8B6010';compassCtx.lineWidth=3;compassCtx.stroke();
+  // Cardinal ticks
+  for(let i=0;i<8;i++){
+    const a=i*Math.PI/4;
+    compassCtx.strokeStyle=i%2===0?'#2A1E0A':'rgba(42,30,10,0.35)';
+    compassCtx.lineWidth=i%2===0?2.5:1.5;
+    compassCtx.beginPath();compassCtx.moveTo(cx+Math.cos(a)*(r-4),cy+Math.sin(a)*(r-4));
+    compassCtx.lineTo(cx+Math.cos(a)*(i%2===0?r-18:r-12),cy+Math.sin(a)*(i%2===0?r-18:r-12));
+    compassCtx.stroke();
+  }
+  // Labels
+  const dirs=[['N',-Math.PI/2,'#C0392B',18],['S',Math.PI/2,'#2A1E0A',16],['E',0,'#2A1E0A',16],['W',Math.PI,'#2A1E0A',16],
+    ['NE',-Math.PI/4,'rgba(42,30,10,0.5)',12],['SE',Math.PI/4,'rgba(42,30,10,0.5)',12],
+    ['SW',3*Math.PI/4,'rgba(42,30,10,0.5)',12],['NW',-3*Math.PI/4,'rgba(42,30,10,0.5)',12]];
+  dirs.forEach(([l,a,col,fs])=>{
+    compassCtx.fillStyle=col;compassCtx.font='bold '+fs+'px "Space Mono",monospace';
+    compassCtx.textAlign='center';compassCtx.textBaseline='middle';
+    compassCtx.fillText(l,cx+Math.cos(a)*(r-28),cy+Math.sin(a)*(r-28));
+  });
+  // North arrow
+  compassCtx.fillStyle='#C0392B';
+  compassCtx.beginPath();compassCtx.moveTo(cx,cy-r*.42);compassCtx.lineTo(cx-8,cy);compassCtx.lineTo(cx+8,cy);compassCtx.closePath();compassCtx.fill();
+  compassCtx.fillStyle='#2A1E0A';
+  compassCtx.beginPath();compassCtx.moveTo(cx,cy+r*.42);compassCtx.lineTo(cx-8,cy);compassCtx.lineTo(cx+8,cy);compassCtx.closePath();compassCtx.fill();
+  compassCtx.fillStyle='#FFF';compassCtx.beginPath();compassCtx.arc(cx,cy,8,0,Math.PI*2);compassCtx.fill();
+  compassCtx.strokeStyle='#8B6010';compassCtx.lineWidth=2;compassCtx.stroke();
+  compassCtx.fillStyle='#2A1E0A';compassCtx.beginPath();compassCtx.arc(cx,cy,4,0,Math.PI*2);compassCtx.fill();
+}
+
+const DIR_CHS=[
+  {q:'The Village (C4) is to which direction from the Ship (B6)?',ans:'North-East',opts:['North','North-East','East','South-East'],exp:'C4 is up (North) and to the right (East) of B6 — that is North-East.'},
+  {q:'The Treasure Cove (H4) is to which direction from the Rocky Peak (E3)?',ans:'East',opts:['North','East','South','West'],exp:'H4 is to the right of E3 on the same row — that is East.'},
+  {q:'If you face North and turn 90° clockwise, you face:',ans:'East',opts:['North','East','South','West'],exp:'Turning 90° clockwise from North puts you facing East.'},
+  {q:'You travel from E3 to E6. Which direction did you go?',ans:'South',opts:['North','East','South','West'],exp:'Going from row 3 to row 6 means going down the map — that is South.'},
+  {q:'The compass shows N at the top. Which direction is to the LEFT of East?',ans:'North',opts:['South','North','West','East'],exp:'North is above East; to the left of East on a compass is North.'},
+];
+let dirIdx=0,dirScore=0,dirTotal=0;
+
+function renderDirChallenge(){
+  if(dirIdx>=DIR_CHS.length)dirIdx=0;
+  const ch=DIR_CHS[dirIdx];
+  const c=document.getElementById('dir-challenges');
+  c.innerHTML='';
+  const div=document.createElement('div');div.className='dir-card';
+  div.innerHTML='<div class="ch-tag">Direction challenge '+(dirIdx+1)+' of '+DIR_CHS.length+'</div><div class="ch-q">'+ch.q+'</div><div class="ch-opts" id="dir-opts"></div><div class="ch-fb" id="dir-fb"></div>';
+  c.appendChild(div);
+  [...ch.opts].forEach(o=>{
+    const b=document.createElement('button');b.className='ch-opt';b.textContent=o;
+    b.onclick=()=>{
+      div.querySelectorAll('.ch-opt').forEach(x=>x.onclick=null);
+      const ok=o===ch.ans;
+      b.classList.add(ok?'correct':'wrong');
+      if(!ok)div.querySelectorAll('.ch-opt').forEach(x=>{if(x.textContent===ch.ans)x.classList.add('correct')});
+      const fb=document.getElementById('dir-fb');
+      fb.textContent=(ok?'\u2713 ':'✗ ')+ch.exp;
+      fb.className='ch-fb '+(ok?'ok':'no');
+      dirTotal++;if(ok)dirScore++;
+      if(ok)setTimeout(()=>{dirIdx++;renderDirChallenge();},1500);
+    };
+    document.getElementById('dir-opts').appendChild(b);
+  });
+}
+
+// ── SCALE CHALLENGES ─────────────────────────────────────────
+const rulerCvs=document.getElementById('ruler-canvas');
+const rulerCtx=rulerCvs.getContext('2d');
+
+function drawRuler(){
+  const W=400,H=44;
+  rulerCtx.fillStyle='#F5E8C8';rulerCtx.fillRect(0,0,W,H);
+  rulerCtx.fillStyle='#8B6010';rulerCtx.font='bold 11px "Space Mono",monospace';
+  for(let cm=0;cm<=10;cm++){
+    const x=cm*38;
+    rulerCtx.fillStyle=cm%2===0?'#2A1E0A':'#F9A825';
+    rulerCtx.fillRect(x,10,38,16);
+    rulerCtx.fillStyle='#fff';rulerCtx.textAlign='center';rulerCtx.textBaseline='middle';
+    rulerCtx.fillText(cm+'cm',x+19,18);
+    rulerCtx.fillStyle='#8B6010';rulerCtx.textAlign='center';rulerCtx.textBaseline='top';
+    rulerCtx.fillText((cm*2)+'km',x,30);
+  }
+  rulerCtx.strokeStyle='#8B6010';rulerCtx.lineWidth=2;rulerCtx.strokeRect(0,10,W,16);
+}
+
+const SCALE_CHS=[
+  {q:'Two villages are 3 cm apart on the map. How far is that in real life? (Scale: 1 cm = 2 km)',ans:'6 km',opts:['3 km','4 km','6 km','9 km'],exp:'3 × 2 = 6 km.'},
+  {q:'A river is 8 km long in real life. How long is it on this map? (Scale: 1 cm = 2 km)',ans:'4 cm',opts:['2 cm','4 cm','8 cm','16 cm'],exp:'8 ÷ 2 = 4 cm on the map.'},
+  {q:'On a 1:50 000 map, 2 cm represents how many metres?',ans:'1000 m',opts:['500 m','1000 m','2000 m','5000 m'],exp:'2 × 50 000 = 100 000 cm = 1000 m.'},
+  {q:'The ship is 5 cm from the treasure on the map. Scale: 1 cm = 2 km. Real distance?',ans:'10 km',opts:['5 km','8 km','10 km','25 km'],exp:'5 × 2 = 10 km.'},
+  {q:'Two towns are 12 km apart in real life. Scale: 1 cm = 3 km. Map distance?',ans:'4 cm',opts:['3 cm','4 cm','6 cm','12 cm'],exp:'12 ÷ 3 = 4 cm.'},
+];
+let scaleIdx=0,scaleScore=0,scaleTotal=0;
+
+function renderScaleChallenge(){
+  if(scaleIdx>=SCALE_CHS.length)scaleIdx=0;
+  const ch=SCALE_CHS[scaleIdx];
+  const c=document.getElementById('scale-challenges');c.innerHTML='';
+  const div=document.createElement('div');div.className='dir-card';
+  div.innerHTML='<div class="ch-tag">Scale challenge '+(scaleIdx+1)+' of '+SCALE_CHS.length+'</div><div class="ch-q">'+ch.q+'</div><div class="ch-opts" id="sc-opts"></div><div class="ch-fb" id="sc-fb"></div>';
+  c.appendChild(div);
+  [...ch.opts].forEach(o=>{
+    const b=document.createElement('button');b.className='ch-opt';b.textContent=o;
+    b.onclick=()=>{
+      div.querySelectorAll('.ch-opt').forEach(x=>x.onclick=null);
+      const ok=o===ch.ans;
+      b.classList.add(ok?'correct':'wrong');
+      if(!ok)div.querySelectorAll('.ch-opt').forEach(x=>{if(x.textContent===ch.ans)x.classList.add('correct')});
+      document.getElementById('sc-fb').textContent=(ok?'\u2713 ':'\u2717 ')+ch.exp;
+      document.getElementById('sc-fb').className='ch-fb '+(ok?'ok':'no');
+      scaleTotal++;if(ok)scaleScore++;
+      if(ok)setTimeout(()=>{scaleIdx++;renderScaleChallenge();},1500);
+    };
+    document.getElementById('sc-opts').appendChild(b);
+  });
+}
+
+// ── PRACTICE ─────────────────────────────────────────────────
+const Qs=[
+  {q:'On a grid map, what does the letter part of a reference (e.g. "C4") tell you?',ans:'The column (left–right)',opts:['The row (up–down)','The column (left–right)','The scale','The terrain'],exp:'Letters label columns going across. Numbers label rows going down.'},
+  {q:'Which direction is directly opposite North on a compass?',ans:'South',opts:['East','West','South','North-East'],exp:'North and South are directly opposite.'},
+  {q:'A map scale says 1 cm = 5 km. Two towns are 4 cm apart. How far in real life?',ans:'20 km',opts:['5 km','10 km','20 km','40 km'],exp:'4 × 5 = 20 km.'},
+  {q:'You face East and turn 90° anti-clockwise. You now face:',ans:'North',opts:['South','North','West','East'],exp:'From East, turning anti-clockwise (left) 90° brings you to face North.'},
+  {q:'Grid reference E3: what does the number "3" mean?',ans:'Row 3 (third row down)',opts:['Column 3','Row 3 (third row down)','3 km from centre','Third landmark'],exp:'Letters = columns (across), numbers = rows (down). So "3" = third row.'},
+  {q:'On a 1:100 000 map, 3 cm on the map = how many km?',ans:'3 km',opts:['1 km','3 km','30 km','300 km'],exp:'3 × 100 000 = 300 000 cm = 3 km.'},
+];
+let pqUsed=[];
+function nextPQ(){
+  if(pqUsed.length>=Qs.length)pqUsed=[];
+  let idx;do{idx=Math.floor(Math.random()*Qs.length)}while(pqUsed.includes(idx));
+  pqUsed.push(idx);
+  const q=Qs[idx];
+  document.getElementById('pq-text').textContent=q.q;
+  document.getElementById('pq-fb').textContent='';
+  document.getElementById('pq-fb').className='pq-fb';
+  const opts=document.getElementById('pq-opts');opts.innerHTML='';
+  [...q.opts].sort(()=>Math.random()-.5).forEach(o=>{
+    const b=document.createElement('button');b.className='ans-opt';b.textContent=o;
+    b.onclick=()=>{
+      opts.querySelectorAll('.ans-opt').forEach(x=>x.onclick=null);
+      const ok=o===q.ans;
+      b.classList.add(ok?'correct':'wrong');
+      if(!ok)opts.querySelectorAll('.ans-opt').forEach(x=>{if(x.textContent===q.ans)x.classList.add('correct')});
+      document.getElementById('pq-fb').textContent=(ok?'\u2713 Correct! ':'\u2717 Not quite. ')+q.exp;
+      document.getElementById('pq-fb').className='pq-fb '+(ok?'ok':'no');
+    };
+    opts.appendChild(b);
+  });
+}
+
+function switchTab(t){
+  ['grid','directions','scale','practice'].forEach(x=>document.getElementById('pnl-'+x).classList.toggle('on',x===t));
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['grid','directions','scale','practice'][i]===t));
+  if(t==='practice')nextPQ();
+  if(t==='grid')initMap();
+  if(t==='directions')drawCompass();
+  if(t==='scale'){drawRuler();renderScaleChallenge();}
+}
+
+window.addEventListener('resize',()=>{
+  if(document.getElementById('pnl-grid').classList.contains('on'))initMap();
+});
+
+// Init
+initMap();
+nextGridChallenge();
+drawCompass();
+renderDirChallenge();
+drawRuler();
+renderScaleChallenge();
+nextPQ();
+</script>
+</body>
+</html>
