@@ -8,61 +8,44 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* Brand palette — identical to Ch.13 / Ch.15 */
   --navy:#1A3A6B;--navy2:#0D2850;--navy3:#253660;
   --sky:#D0E8FF;--teal:#0D7A7A;--lime:#3D8A10;
   --amber:#B87808;--amber2:#8A5808;--amber-light:#FFF0B0;
   --paper:#F4F8FF;--paper2:#E8F0FC;--paper3:#D8E4F8;
-  --ink:#080C18;--ink2:#243060;--ink3:#6878A8;--rule:#B8C8E8;
+  --ink:#080C18;--ink2:#243060;--ink3:#6878A8;--rule:#B8C8E8;--ok:#16A34A;
   --sans:'Syne',sans-serif;--serif:'Instrument Serif',serif;--mono:'Space Mono',monospace;
-  /* Map colours */
   --ocean:#2979C2;--beach:#F9C22A;--forest:#2E7D32;--river:#29ABD4;
 }
 html,body{width:100%;min-height:100vh;background:var(--paper);color:var(--ink);font-family:var(--sans);overflow-x:hidden}
-
-/* ── HEADER (matches Ch.13/15) ── */
 .header{background:var(--navy);padding:0 20px;display:flex;align-items:center;gap:14px;height:56px;border-bottom:3px solid var(--navy2);position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.25)}
 .hdr-icon{width:34px;height:34px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .header-title{font-family:var(--serif);font-size:20px;color:#EEF4FF;font-style:italic}
 .header-sub{font-family:var(--mono);font-size:10px;color:rgba(238,244,255,0.5);letter-spacing:1.5px;text-transform:uppercase}
 .header-tabs{margin-left:auto;display:flex;gap:0;background:rgba(0,0,0,0.25);border-radius:8px;padding:3px}
-.tab{padding:7px 12px;font-family:var(--mono);font-size:10px;color:rgba(238,244,255,0.5);cursor:pointer;border-radius:6px;transition:.2s;border:none;background:none;white-space:nowrap}
+.tab{padding:7px 14px;font-family:var(--mono);font-size:10px;color:rgba(238,244,255,0.5);cursor:pointer;border-radius:6px;transition:.2s;border:none;background:none;white-space:nowrap}
 .tab.on{background:var(--paper);color:var(--ink);font-weight:700}
 .tab:hover:not(.on){color:rgba(238,244,255,0.85)}
-
 .main{max-width:960px;margin:0 auto;padding:20px 16px 64px}
 .pnl{display:none}.pnl.on{display:block}
-
-/* ── SHARED CARD ── */
 .card{background:#fff;border:2px solid var(--rule);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 12px rgba(10,30,80,0.07)}
 .card-head{padding:11px 18px;color:#fff;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
 .card-body{padding:16px 20px}
-
-/* ── CONCEPT BANNER — explains the skill before activities ── */
 .concept{background:var(--navy);border-radius:12px;padding:18px 20px;margin-bottom:16px;display:flex;gap:16px;align-items:flex-start}
 .concept-icon{font-size:36px;flex-shrink:0;line-height:1}
-.concept-body{}
 .concept-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(208,232,255,0.6);margin-bottom:4px}
 .concept-text{font-family:var(--serif);font-style:italic;font-size:15px;color:#EEF4FF;line-height:1.7}
 .concept-text strong{font-style:normal;color:var(--beach)}
-
-/* ── GRID MAP LAYOUT ── */
+/* GRID MAP */
 .grid-layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
-
-/* Map canvas wrapper with legend strip */
 .map-wrap{background:#fff;border:2px solid var(--rule);border-radius:12px;overflow:hidden}
 .map-legend{display:flex;gap:0;border-bottom:2px solid var(--rule)}
 .legend-item{flex:1;display:flex;align-items:center;gap:6px;padding:7px 10px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink2);border-right:1.5px solid var(--rule)}
 .legend-item:last-child{border-right:none}
 .legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
 #map-canvas{display:block;width:100%;height:auto;cursor:crosshair;touch-action:none}
-
-/* Tooltip / active ref display */
 .ref-display{background:var(--paper2);border:2px solid var(--rule);border-radius:10px;padding:10px 14px;margin-top:10px;display:flex;align-items:center;gap:10px;min-height:44px}
 .ref-badge{background:var(--navy);color:#fff;font-family:var(--mono);font-size:18px;font-weight:700;border-radius:8px;padding:4px 12px;letter-spacing:1px;flex-shrink:0}
 .ref-info{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink2);line-height:1.5}
-
-/* Challenge sidebar */
 .sidebar{}
 .challenge-card{background:var(--paper2);border:2px solid var(--rule);border-radius:12px;padding:16px;margin-bottom:12px}
 .ch-tag{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
@@ -74,100 +57,67 @@ html,body{width:100%;min-height:100vh;background:var(--paper);color:var(--ink);f
 .ch-opt.wrong{background:#FEE2E2;border-color:#DC2626;color:#7F1D1D;animation:cshk .35s}
 .ch-fb{margin-top:10px;font-family:var(--serif);font-style:italic;font-size:13px;min-height:18px;line-height:1.5}
 .ch-fb.ok{color:#16A34A}.ch-fb.no{color:#DC2626}
-
-/* Tap-to-answer instructions strip */
 .tap-strip{background:var(--amber-light);border:2px solid var(--amber);border-radius:8px;padding:8px 12px;font-family:var(--serif);font-style:italic;font-size:13px;color:var(--amber2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-
-/* Score pill */
 .score-pill{background:var(--navy);color:#fff;font-family:var(--mono);font-size:11px;font-weight:700;border-radius:20px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;margin-bottom:12px}
 .score-pill span{opacity:.6}
-
-/* ── DIRECTIONS TAB ── */
-.dir-layout{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start}
-.compass-card{background:var(--navy);border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+/* DIRECTIONS: two-column with mini map */
+.dir-layout{display:grid;grid-template-columns:200px 1fr 260px;gap:16px;align-items:start}
+.compass-card{background:var(--navy);border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .compass-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(208,232,255,0.55)}
 #compass-canvas{border-radius:50%}
-.compass-fact{font-family:var(--serif);font-style:italic;font-size:12px;color:rgba(208,232,255,0.7);text-align:center;line-height:1.6;padding:0 4px}
-
-/* ── SCALE TAB ── */
-.scale-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-.ruler-card{background:var(--navy);border-radius:12px;padding:18px 20px}
-.ruler-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(208,232,255,0.55);margin-bottom:12px}
-#ruler-canvas{display:block;width:100%;height:auto;border-radius:6px}
-.scale-formula{margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.formula-chip{background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 12px;font-family:var(--mono);font-size:12px;font-weight:700;color:#fff}
-.formula-chip.gold{background:rgba(249,194,42,0.18);border-color:rgba(249,194,42,0.4);color:var(--beach)}
-.arrow-txt{font-family:var(--mono);font-size:14px;font-weight:700;color:rgba(255,255,255,0.4)}
-
-/* ── PRACTICE TAB ── */
+.compass-fact{font-family:var(--serif);font-style:italic;font-size:11px;color:rgba(208,232,255,0.7);text-align:center;line-height:1.6;padding:0 4px}
+.minimap-card{background:#fff;border:2px solid var(--rule);border-radius:12px;overflow:hidden}
+.minimap-label{background:var(--navy2);padding:7px 12px;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(208,232,255,0.7)}
+#minimap-canvas{display:block;width:100%;height:auto}
+.dir-challenges{}
 .prac-card{background:#fff;border:2px solid var(--rule);border-radius:12px;padding:20px;margin-bottom:14px}
-.prac-q{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink);margin-bottom:14px;line-height:1.6}
+.prac-q{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);margin-bottom:14px;line-height:1.6}
 .ans-opts{display:flex;gap:8px;flex-wrap:wrap}
-.ans-opt{padding:10px 18px;background:var(--paper2);border:2px solid var(--rule);border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;cursor:pointer;transition:.2s;color:var(--ink2)}
+.ans-opt{padding:9px 16px;background:var(--paper2);border:2px solid var(--rule);border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;transition:.2s;color:var(--ink2)}
 .ans-opt:hover{border-color:var(--navy);background:var(--sky)}
 .ans-opt.correct{background:#DCFCE7;border-color:#16A34A;color:#14532D;animation:cpop .35s}
 .ans-opt.wrong{background:#FEE2E2;border-color:#DC2626;color:#7F1D1D;animation:cshk .35s}
-.pq-fb{min-height:22px;margin-top:10px;font-family:var(--serif);font-style:italic;font-size:14px}
+.pq-fb{min-height:22px;margin-top:10px;font-family:var(--serif);font-style:italic;font-size:13px}
 .pq-fb.ok{color:#16A34A}.pq-fb.no{color:#DC2626}
-.next-btn{margin-top:12px;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
+.next-btn{margin-top:10px;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;transition:.15s}
 .next-btn:hover{background:var(--navy3)}
 
 @keyframes cpop{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
 @keyframes cshk{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-
-@media(max-width:680px){
+@media(max-width:740px){
   .grid-layout{grid-template-columns:1fr}
   .dir-layout{grid-template-columns:1fr}
-  .scale-layout{grid-template-columns:1fr}
   .header{height:auto;padding:10px 16px;flex-wrap:wrap;gap:8px}
   .header-tabs{width:100%;justify-content:center;flex-wrap:wrap}
 }
 </style>
 </head>
 <body>
-
-<!-- ══ HEADER ══ -->
 <div class="header">
   <div class="hdr-icon">
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <circle cx="11" cy="11" r="9" stroke="#D0E8FF" stroke-width="1.5"/>
-      <polygon points="11,3 12.4,8.5 11,7.2 9.6,8.5" fill="#F9C22A"/>
-      <line x1="11" y1="11" x2="11" y2="18" stroke="#D0E8FF" stroke-width="1.5" stroke-linecap="round"/>
-      <circle cx="11" cy="11" r="1.8" fill="#F9C22A"/>
-    </svg>
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#D0E8FF" stroke-width="1.5"/><polygon points="11,3 12.4,8.5 11,7.2 9.6,8.5" fill="#F9C22A"/><line x1="11" y1="11" x2="11" y2="18" stroke="#D0E8FF" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="11" r="1.8" fill="#F9C22A"/></svg>
   </div>
   <div>
     <div class="header-title">Island Explorer</div>
     <div class="header-sub">Chapter 14 · Maps &amp; Directions</div>
   </div>
   <div class="header-tabs">
-    <button class="tab on"  onclick="switchTab('grid')">Grid Map</button>
-    <button class="tab"     onclick="switchTab('directions')">Directions</button>
-    <button class="tab"     onclick="switchTab('scale')">Scale</button>
-    <button class="tab"     onclick="switchTab('practice')">Practice</button>
+    <button class="tab on" onclick="switchTab('grid')">Grid Map</button>
+    <button class="tab" onclick="switchTab('directions')">Practice</button>
   </div>
 </div>
-
 <div class="main">
 
-<!-- ══ GRID MAP TAB ══ -->
+<!-- GRID MAP TAB -->
 <div class="pnl on" id="pnl-grid">
-
-  <!-- Concept explainer -->
   <div class="concept">
     <div class="concept-icon">🗺️</div>
-    <div class="concept-body">
+    <div>
       <div class="concept-title">What is a Grid Reference?</div>
-      <div class="concept-text">
-        Maps use a grid of <strong>letters (columns →)</strong> and <strong>numbers (rows ↓)</strong>.
-        Every square gets a unique code like <strong>C4</strong> — letter first, then number.
-        Hover or tap the map to reveal any square's reference, then answer the challenges!
-      </div>
+      <div class="concept-text">Maps use a grid of <strong>letters (columns →)</strong> and <strong>numbers (rows ↓)</strong>. Every square gets a unique code like <strong>C4</strong> — letter first, then number. Hover or tap the map, then answer the challenges!</div>
     </div>
   </div>
-
   <div class="grid-layout">
-    <!-- Map -->
     <div>
       <div class="map-wrap">
         <div class="map-legend">
@@ -183,581 +133,158 @@ html,body{width:100%;min-height:100vh;background:var(--paper);color:var(--ink);f
         <div class="ref-info" id="ref-info">Move your cursor over the map to explore a square</div>
       </div>
     </div>
-
-    <!-- Challenge sidebar -->
     <div class="sidebar">
       <div class="score-pill"><span>Score</span> <span id="grid-score">0</span> / <span id="grid-total">0</span></div>
-      <div class="tap-strip">
-        <span style="font-size:18px;font-style:normal">👆</span>
-        <span id="tap-instr">Tap the correct square on the map to answer.</span>
-      </div>
+      <div class="tap-strip"><span style="font-size:18px;font-style:normal">👆</span><span id="tap-instr">Tap the correct square on the map to answer.</span></div>
       <div id="grid-challenge"></div>
     </div>
   </div>
 </div>
 
-<!-- ══ DIRECTIONS TAB ══ -->
+<!-- DIRECTIONS TAB: compass + mini map + challenges -->
 <div class="pnl" id="pnl-directions">
-
   <div class="concept">
     <div class="concept-icon">🧭</div>
-    <div class="concept-body">
+    <div>
       <div class="concept-title">Compass Directions</div>
-      <div class="concept-text">
-        A compass has <strong>4 main directions</strong>: North, South, East, West — and
-        <strong>4 in-between</strong>: NE, SE, SW, NW.
-        North always points to the <strong>top of the map</strong>.
-        Use the compass and map knowledge to answer each question below.
-      </div>
+      <div class="concept-text">A compass has <strong>4 main directions</strong>: N, S, E, W — and <strong>4 in-between</strong>: NE, SE, SW, NW. North always points to the <strong>top of the map</strong>. Use the map and compass to answer the challenges!</div>
     </div>
   </div>
-
   <div class="dir-layout">
-    <!-- Compass card -->
     <div class="compass-card">
       <div class="compass-title">Compass Rose</div>
-      <canvas id="compass-canvas" width="180" height="180"></canvas>
-      <div class="compass-fact">
-        Turn clockwise:<br>
-        N → E → S → W → N<br><br>
-        <strong style="color:#F9C22A">NE</strong> is between North and East,
-        <strong style="color:#F9C22A">NW</strong> between North and West, etc.
-      </div>
+      <canvas id="compass-canvas" width="160" height="160"></canvas>
+      <div class="compass-fact">N → E → S → W → N (clockwise)<br><br><strong style="color:#F9C22A">NE</strong> = between N and E</div>
     </div>
-
-    <!-- Direction challenges -->
-    <div>
+    <div class="minimap-card">
+      <div class="minimap-label">🗺️ Island Map (for reference)</div>
+      <canvas id="minimap-canvas" width="260" height="216"></canvas>
+    </div>
+    <div class="dir-challenges">
       <div class="score-pill"><span>Score</span> <span id="dir-score">0</span> / <span id="dir-total">0</span></div>
-      <div id="dir-challenges"></div>
+      <div id="dir-challenges-content"></div>
     </div>
   </div>
 </div>
 
-<!-- ══ SCALE TAB ══ -->
-<div class="pnl" id="pnl-scale">
-
-  <div class="concept">
-    <div class="concept-icon">📏</div>
-    <div class="concept-body">
-      <div class="concept-title">Map Scale</div>
-      <div class="concept-text">
-        A <strong>scale</strong> converts map distances to real distances.
-        On this map, <strong>1 cm = 2 km</strong>.
-        To find real distance: <strong>map cm × scale = real km</strong>.
-        To find map distance: <strong>real km ÷ scale = map cm</strong>.
-      </div>
-    </div>
-  </div>
-
-  <div class="scale-layout">
-    <!-- Ruler card -->
-    <div class="ruler-card">
-      <div class="ruler-title">Scale Ruler · 1 cm = 2 km</div>
-      <canvas id="ruler-canvas" width="380" height="60"></canvas>
-      <div class="scale-formula">
-        <div class="formula-chip gold">map cm × 2</div>
-        <div class="arrow-txt">→</div>
-        <div class="formula-chip">real km</div>
-        <div class="arrow-txt">&nbsp;&nbsp;</div>
-        <div class="formula-chip gold">real km ÷ 2</div>
-        <div class="arrow-txt">→</div>
-        <div class="formula-chip">map cm</div>
-      </div>
-    </div>
-
-    <!-- Scale challenges -->
-    <div>
-      <div class="score-pill"><span>Score</span> <span id="sc-score">0</span> / <span id="sc-total">0</span></div>
-      <div id="scale-challenges"></div>
-    </div>
-  </div>
 </div>
-
-<!-- ══ PRACTICE TAB ══ -->
-<div class="pnl" id="pnl-practice">
-  <div class="concept">
-    <div class="concept-icon">🔍</div>
-    <div class="concept-body">
-      <div class="concept-title">Quick Fire Practice</div>
-      <div class="concept-text">Test everything you know about <strong>grid references</strong>, <strong>compass directions</strong> and <strong>map scale</strong>.</div>
-    </div>
-  </div>
-  <div class="prac-card">
-    <div class="prac-q" id="pq-text">Loading…</div>
-    <div class="ans-opts" id="pq-opts"></div>
-    <div class="pq-fb" id="pq-fb"></div>
-    <button class="next-btn" onclick="nextPQ()">Next question →</button>
-  </div>
-</div>
-
-</div><!-- /main -->
-
 <script>
 // ── MAP DATA ─────────────────────────────────────────────────────────────────
-const COLS = 9, ROWS = 8;
-const LETTERS = 'ABCDEFGHI';
-// 0=ocean 1=beach 2=forest 3=river
-const T = [
-  [0,0,0,0,0,0,0,0,0],
-  [0,0,1,1,2,2,1,0,0],
-  [0,1,2,2,3,2,2,1,0],
-  [0,1,2,3,3,2,2,2,1],
-  [0,1,2,2,3,2,2,1,0],
-  [0,0,1,2,2,2,1,0,0],
-  [0,0,0,1,1,1,0,0,0],
-  [0,0,0,0,0,0,0,0,0],
-];
-const TC = ['#2979C2','#F9C22A','#2E7D32','#29ABD4'];
-const TERRAIN_NAME = ['Ocean','Beach','Forest','River'];
-const TERRAIN_EMOJI = ['🌊','🏖️','🌲','💧'];
+const COLS=9,ROWS=8;const LETTERS='ABCDEFGHI';
+const T=[[0,0,0,0,0,0,0,0,0],[0,0,1,1,2,2,1,0,0],[0,1,2,2,3,2,2,1,0],[0,1,2,3,3,2,2,2,1],[0,1,2,2,3,2,2,1,0],[0,0,1,2,2,2,1,0,0],[0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,0,0]];
+const TC=['#2979C2','#F9C22A','#2E7D32','#29ABD4'];
+const TERRAIN_NAME=['Ocean','Beach','Forest','River'];
+const TERRAIN_EMOJI=['🌊','🏖️','🌲','💧'];
+const LM=[[1,5,'⚓','Ship Landing','Ship'],[4,2,'⛰️','Rocky Peak','Peak'],[2,3,'🏘️','Village','Village'],[6,2,'🛕','Forest Temple','Temple'],[7,3,'💰','Treasure Cove','Treasure']];
 
-// Landmarks: [col, row, emoji, fullName, shortLabel]
-const LM = [
-  [1,5,'⚓','Ship Landing','Ship'],
-  [4,2,'⛰️','Rocky Peak','Peak'],
-  [2,3,'🏘️','Village of Mango','Village'],
-  [6,2,'🛕','Forest Temple','Temple'],
-  [7,3,'💰','Treasure Cove','Treasure'],
-];
-
-const mapCvs = document.getElementById('map-canvas');
-const mapCtx  = mapCvs.getContext('2d');
-let CELL = 54;
-
-function initMap() {
-  const mw = Math.min(mapCvs.parentElement.offsetWidth || 540, 540);
-  CELL = Math.floor(mw / COLS);
-  mapCvs.width  = CELL * COLS;
-  mapCvs.height = CELL * ROWS;
-  drawMap(null);
-}
-
-function drawMap(hlKey) {
-  const W = mapCvs.width, H = mapCvs.height;
-
-  // Terrain fill
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const t = T[r][c];
-      mapCtx.fillStyle = TC[t];
-      mapCtx.fillRect(c * CELL, r * CELL, CELL, CELL);
-      // Subtle texture
-      if (t === 2) { // forest dots
-        mapCtx.fillStyle = 'rgba(0,60,0,0.12)';
-        for (const [ox,oy] of [[.3,.3],[.65,.55],[.45,.7]]) {
-          mapCtx.beginPath();
-          mapCtx.arc(c*CELL+ox*CELL, r*CELL+oy*CELL, CELL*.13, 0, Math.PI*2);
-          mapCtx.fill();
-        }
-      }
-      if (t === 3) { // river ripple
-        mapCtx.strokeStyle = 'rgba(255,255,255,0.25)';
-        mapCtx.lineWidth = 1.5;
-        mapCtx.beginPath();
-        mapCtx.moveTo(c*CELL+4, r*CELL+CELL/2);
-        mapCtx.bezierCurveTo(c*CELL+CELL*.3, r*CELL+CELL*.3, c*CELL+CELL*.7, r*CELL+CELL*.7, c*CELL+CELL-4, r*CELL+CELL/2);
-        mapCtx.stroke();
-      }
-      if (t === 1) { // beach dots
-        mapCtx.fillStyle = 'rgba(255,200,0,0.15)';
-        mapCtx.beginPath();
-        mapCtx.arc(c*CELL+CELL*.5, r*CELL+CELL*.5, CELL*.3, 0, Math.PI*2);
-        mapCtx.fill();
-      }
-    }
+function drawMapOnCanvas(cvs,ctx,scale){
+  const W=cvs.width,H=cvs.height;const CELL=Math.min(W/COLS,H/ROWS);
+  ctx.clearRect(0,0,W,H);
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    const t=T[r][c];ctx.fillStyle=TC[t];ctx.fillRect(c*CELL,r*CELL,CELL,CELL);
+    if(t===2){ctx.fillStyle='rgba(0,60,0,0.12)';for(const[ox,oy]of[[.3,.3],[.65,.55],[.45,.7]]){ctx.beginPath();ctx.arc(c*CELL+ox*CELL,r*CELL+oy*CELL,CELL*.13,0,Math.PI*2);ctx.fill()}}
+    if(t===3){ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(c*CELL+4,r*CELL+CELL/2);ctx.bezierCurveTo(c*CELL+CELL*.3,r*CELL+CELL*.3,c*CELL+CELL*.7,r*CELL+CELL*.7,c*CELL+CELL-4,r*CELL+CELL/2);ctx.stroke()}
   }
-
-  // Highlight
-  if (hlKey) {
-    const [hc, hr] = hlKey.split(',').map(Number);
-    mapCtx.fillStyle = 'rgba(255,255,120,0.3)';
-    mapCtx.fillRect(hc*CELL, hr*CELL, CELL, CELL);
-    mapCtx.strokeStyle = '#F9C22A';
-    mapCtx.lineWidth = 3;
-    mapCtx.strokeRect(hc*CELL+1.5, hr*CELL+1.5, CELL-3, CELL-3);
-  }
-
-  // Grid lines
-  mapCtx.strokeStyle = 'rgba(0,0,0,0.13)';
-  mapCtx.lineWidth = 0.8;
-  for (let c = 0; c <= COLS; c++) {
-    mapCtx.beginPath(); mapCtx.moveTo(c*CELL, 0); mapCtx.lineTo(c*CELL, H); mapCtx.stroke();
-  }
-  for (let r = 0; r <= ROWS; r++) {
-    mapCtx.beginPath(); mapCtx.moveTo(0, r*CELL); mapCtx.lineTo(W, r*CELL); mapCtx.stroke();
-  }
-
-  // Axis labels — letters bottom, numbers left
-  const fs = Math.max(9, Math.round(CELL * 0.22));
-  mapCtx.font = `bold ${fs}px "Space Mono",monospace`;
-  mapCtx.fillStyle = 'rgba(255,255,255,0.9)';
-  mapCtx.textAlign = 'center'; mapCtx.textBaseline = 'middle';
-  for (let c = 0; c < COLS; c++)
-    mapCtx.fillText(LETTERS[c], c*CELL + CELL/2, H - CELL*0.12);
-  mapCtx.textAlign = 'right';
-  for (let r = 0; r < ROWS; r++)
-    mapCtx.fillText(r + 1, CELL * 0.2, r*CELL + CELL/2);
-
-  // Landmarks
-  LM.forEach(([lc, lr, em, name, short]) => {
-    const x = lc*CELL + CELL/2, y = lr*CELL + CELL/2;
-    // Badge circle
-    mapCtx.fillStyle = 'rgba(255,248,220,0.92)';
-    mapCtx.beginPath(); mapCtx.arc(x, y, CELL * 0.4, 0, Math.PI*2); mapCtx.fill();
-    mapCtx.strokeStyle = 'rgba(26,58,107,0.45)'; mapCtx.lineWidth = 1.5; mapCtx.stroke();
-    // Emoji
-    mapCtx.font = `${Math.round(CELL * 0.4)}px serif`;
-    mapCtx.textAlign = 'center'; mapCtx.textBaseline = 'middle';
-    mapCtx.fillText(em, x, y);
-    // Name label below
-    mapCtx.font = `bold ${Math.round(CELL * 0.17)}px "Space Mono",monospace`;
-    const tw = mapCtx.measureText(short).width;
-    mapCtx.fillStyle = 'rgba(13,40,80,0.82)';
-    mapCtx.beginPath();
-    mapCtx.roundRect(x - tw/2 - 4, lr*CELL + CELL - 14, tw + 8, 13, 3);
-    mapCtx.fill();
-    mapCtx.fillStyle = '#fff'; mapCtx.textBaseline = 'top';
-    mapCtx.fillText(short, x, lr*CELL + CELL - 14);
+  ctx.strokeStyle='rgba(0,0,0,0.12)';ctx.lineWidth=0.7;
+  for(let c=0;c<=COLS;c++){ctx.beginPath();ctx.moveTo(c*CELL,0);ctx.lineTo(c*CELL,H);ctx.stroke()}
+  for(let r=0;r<=ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*CELL);ctx.lineTo(W,r*CELL);ctx.stroke()}
+  const fs=Math.max(7,Math.round(CELL*0.22));ctx.font=`bold ${fs}px "Space Mono",monospace`;ctx.fillStyle='rgba(255,255,255,0.85)';ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let c=0;c<COLS;c++)ctx.fillText(LETTERS[c],c*CELL+CELL/2,H-CELL*.12);
+  ctx.textAlign='right';for(let r=0;r<ROWS;r++)ctx.fillText(r+1,CELL*.18,r*CELL+CELL/2);
+  LM.forEach(([lc,lr,em,name,short])=>{
+    const x=lc*CELL+CELL/2,y=lr*CELL+CELL/2;
+    ctx.fillStyle='rgba(255,248,220,0.92)';ctx.beginPath();ctx.arc(x,y,CELL*.38,0,Math.PI*2);ctx.fill();
+    ctx.font=`${Math.round(CELL*.38)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(em,x,y);
+    const lfs=Math.max(7,Math.round(CELL*.16));ctx.font=`bold ${lfs}px "Space Mono",monospace`;const tw=ctx.measureText(short).width;
+    ctx.fillStyle='rgba(13,40,80,0.8)';ctx.beginPath();ctx.roundRect(x-tw/2-3,lr*CELL+CELL-12,tw+6,11,2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.textBaseline='top';ctx.fillText(short,x,lr*CELL+CELL-12);
   });
-
-  // Mini compass rose (top-right corner)
-  drawCompassMini(W - CELL * 0.72, CELL * 0.72, CELL * 0.52);
-}
-
-function drawCompassMini(cx, cy, r) {
-  mapCtx.fillStyle = 'rgba(255,248,220,0.92)';
-  mapCtx.beginPath(); mapCtx.arc(cx, cy, r, 0, Math.PI*2); mapCtx.fill();
-  mapCtx.strokeStyle = 'rgba(26,58,107,0.4)'; mapCtx.lineWidth = 1.5; mapCtx.stroke();
-  [['N',-Math.PI/2,'#C0392B'],['S',Math.PI/2,'#1A3A6B'],['E',0,'#1A3A6B'],['W',Math.PI,'#1A3A6B']].forEach(([l,a,col]) => {
-    mapCtx.fillStyle = col;
-    mapCtx.font = `bold ${Math.round(r * 0.38)}px "Space Mono",monospace`;
-    mapCtx.textAlign = 'center'; mapCtx.textBaseline = 'middle';
-    mapCtx.fillText(l, cx + Math.cos(a)*r*0.6, cy + Math.sin(a)*r*0.6);
+  // compass rose
+  const cr=CELL*.48,cx2=W-CELL*.65,cy2=CELL*.65;
+  ctx.fillStyle='rgba(255,248,220,0.9)';ctx.beginPath();ctx.arc(cx2,cy2,cr,0,Math.PI*2);ctx.fill();
+  [['N',-Math.PI/2,'#C0392B'],['S',Math.PI/2,'#1A3A6B'],['E',0,'#1A3A6B'],['W',Math.PI,'#1A3A6B']].forEach(([l,a,col])=>{
+    ctx.fillStyle=col;ctx.font=`bold ${Math.round(cr*.38)}px "Space Mono",monospace`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(l,cx2+Math.cos(a)*cr*.6,cy2+Math.sin(a)*cr*.6);
   });
-  mapCtx.fillStyle = '#C0392B';
-  mapCtx.beginPath(); mapCtx.moveTo(cx, cy - r*0.42); mapCtx.lineTo(cx-4, cy); mapCtx.lineTo(cx+4, cy); mapCtx.closePath(); mapCtx.fill();
-  mapCtx.fillStyle = '#555';
-  mapCtx.beginPath(); mapCtx.moveTo(cx, cy + r*0.42); mapCtx.lineTo(cx-4, cy); mapCtx.lineTo(cx+4, cy); mapCtx.closePath(); mapCtx.fill();
-  mapCtx.fillStyle = '#1A3A6B'; mapCtx.beginPath(); mapCtx.arc(cx, cy, 3, 0, Math.PI*2); mapCtx.fill();
+  ctx.fillStyle='#C0392B';ctx.beginPath();ctx.moveTo(cx2,cy2-cr*.4);ctx.lineTo(cx2-3,cy2);ctx.lineTo(cx2+3,cy2);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#555';ctx.beginPath();ctx.moveTo(cx2,cy2+cr*.4);ctx.lineTo(cx2-3,cy2);ctx.lineTo(cx2+3,cy2);ctx.closePath();ctx.fill();
 }
 
-// ── Map pointer ──────────────────────────────────────────────────────────────
-function getCell(e) {
-  const rc = mapCvs.getBoundingClientRect();
-  const sx = mapCvs.width / rc.width;
-  const src = e.touches ? e.touches[0] : e;
-  const c = Math.floor((src.clientX - rc.left) * sx / CELL);
-  const r = Math.floor((src.clientY - rc.top)  * sx / CELL);
-  if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return null;
-  return { c, r, key: c + ',' + r };
+const mapCvs=document.getElementById('map-canvas');const mapCtx=mapCvs.getContext('2d');
+let CELL=54;
+function initMap(){const mw=Math.min(mapCvs.parentElement.offsetWidth||540,540);CELL=Math.floor(mw/COLS);mapCvs.width=CELL*COLS;mapCvs.height=CELL*ROWS;drawMapOnCanvas(mapCvs,mapCtx,1);drawMap(null)}
+function drawMap(hlKey){
+  drawMapOnCanvas(mapCvs,mapCtx,1);
+  if(hlKey){const[hc,hr]=hlKey.split(',').map(Number);mapCtx.fillStyle='rgba(255,255,120,0.3)';mapCtx.fillRect(hc*CELL,hr*CELL,CELL,CELL);mapCtx.strokeStyle='#F9C22A';mapCtx.lineWidth=3;mapCtx.strokeRect(hc*CELL+1.5,hr*CELL+1.5,CELL-3,CELL-3)}
+}
+function getCell(e){const rc=mapCvs.getBoundingClientRect();const sx=mapCvs.width/rc.width;const src=e.touches?e.touches[0]:e;const c=Math.floor((src.clientX-rc.left)*sx/CELL);const r=Math.floor((src.clientY-rc.top)*sx/CELL);if(c<0||c>=COLS||r<0||r>=ROWS)return null;return{c,r,key:c+','+r}}
+function updateRefDisplay(c,r){const ref=LETTERS[c]+(r+1);const lm=LM.find(([lc,lr])=>lc===c&&lr===r);document.getElementById('ref-badge').textContent=ref;document.getElementById('ref-info').textContent=lm?`${lm[2]} ${lm[3]} — ${TERRAIN_NAME[T[r][c]]} terrain`:`${TERRAIN_EMOJI[T[r][c]]} ${TERRAIN_NAME[T[r][c]]} — square ${ref}`}
+mapCvs.addEventListener('mousemove',e=>{const cell=getCell(e);if(cell){updateRefDisplay(cell.c,cell.r);drawMap(cell.key)}});
+mapCvs.addEventListener('mouseleave',()=>drawMap(null));
+mapCvs.addEventListener('click',e=>{const cell=getCell(e);if(cell){updateRefDisplay(cell.c,cell.r);checkGridTap(cell.c,cell.r)}});
+mapCvs.addEventListener('touchstart',e=>{e.preventDefault();const cell=getCell(e);if(cell){updateRefDisplay(cell.c,cell.r);drawMap(cell.key);checkGridTap(cell.c,cell.r)}},{passive:false});
+// grid challenges
+const GRID_CHS=[{q:'Where is the Ship Landing? Tap its square.',target:[1,5]},{q:'Tap the Treasure Cove on the map.',target:[7,3]},{q:'Tap the Forest Temple.',target:[6,2]},{q:'Find the Village of Mango — tap it.',target:[2,3]},{q:'Where is the Rocky Peak? Tap it.',target:[4,2]},{q:'Tap any FOREST square (dark green).',targetTerrain:2},{q:'Tap any RIVER square (light blue).',targetTerrain:3},{q:'Tap the square at grid reference D5.',target:[3,4]},{q:'Tap the square at grid reference F2.',target:[5,1]}];
+let gridIdx=0,gridScore=0,gridTotal=0,awaitTap=false;
+function nextGridChallenge(){if(gridIdx>=GRID_CHS.length)gridIdx=0;const ch=GRID_CHS[gridIdx];awaitTap=true;document.getElementById('grid-challenge').innerHTML=`<div class="challenge-card"><div class="ch-tag">Challenge ${gridIdx+1} of ${GRID_CHS.length}</div><div class="ch-q">${ch.q}</div><div class="ch-fb" id="gfb"></div></div>`}
+function checkGridTap(c,r){if(!awaitTap)return;const ch=GRID_CHS[gridIdx];const fb=document.getElementById('gfb');if(!fb)return;const ref=LETTERS[c]+(r+1);let ok=false;if(ch.target&&ch.target[0]===c&&ch.target[1]===r)ok=true;if(ch.targetTerrain!==undefined&&T[r][c]===ch.targetTerrain)ok=true;gridTotal++;document.getElementById('grid-total').textContent=gridTotal;if(ok){gridScore++;document.getElementById('grid-score').textContent=gridScore;fb.textContent=`✓ Correct! That is ${ref}.`;fb.className='ch-fb ok';awaitTap=false;setTimeout(()=>{gridIdx++;nextGridChallenge()},1400)}else{fb.textContent=`✗ That is ${ref} — not quite. Letter = column (→), number = row (↓).`;fb.className='ch-fb no'}}
+
+// ── COMPASS ─────────────────────────────────────────────────────────────────
+const compassCvs=document.getElementById('compass-canvas');const compassCtx=compassCvs.getContext('2d');
+function drawCompass(){
+  const cx=80,cy=80,r=74;compassCtx.clearRect(0,0,160,160);
+  const grad=compassCtx.createRadialGradient(cx,cy,r*.3,cx,cy,r);grad.addColorStop(0,'#2A4A8A');grad.addColorStop(1,'#0D2850');
+  compassCtx.fillStyle=grad;compassCtx.beginPath();compassCtx.arc(cx,cy,r,0,Math.PI*2);compassCtx.fill();
+  compassCtx.strokeStyle='rgba(208,232,255,0.3)';compassCtx.lineWidth=2;compassCtx.stroke();
+  for(let i=0;i<32;i++){const a=i*Math.PI*2/32;const major=i%4===0;compassCtx.strokeStyle=major?'rgba(249,194,42,0.8)':'rgba(208,232,255,0.25)';compassCtx.lineWidth=major?2:1;compassCtx.beginPath();compassCtx.moveTo(cx+Math.cos(a)*(r-2),cy+Math.sin(a)*(r-2));compassCtx.lineTo(cx+Math.cos(a)*(major?r-11:r-6),cy+Math.sin(a)*(major?r-11:r-6));compassCtx.stroke()}
+  [['NE',-Math.PI/4],['SE',Math.PI/4],['SW',3*Math.PI/4],['NW',-3*Math.PI/4]].forEach(([l,a])=>{compassCtx.fillStyle='rgba(208,232,255,0.45)';compassCtx.font='bold 9px "Space Mono",monospace';compassCtx.textAlign='center';compassCtx.textBaseline='middle';compassCtx.fillText(l,cx+Math.cos(a)*(r-22),cy+Math.sin(a)*(r-22))});
+  [['N',-Math.PI/2,'#F9C22A',15],['S',Math.PI/2,'#EEF4FF',13],['E',0,'#EEF4FF',13],['W',Math.PI,'#EEF4FF',13]].forEach(([l,a,col,fs])=>{compassCtx.fillStyle=col;compassCtx.font=`bold ${fs}px "Space Mono",monospace`;compassCtx.textAlign='center';compassCtx.textBaseline='middle';compassCtx.fillText(l,cx+Math.cos(a)*(r-24),cy+Math.sin(a)*(r-24))});
+  compassCtx.fillStyle='#E53935';compassCtx.beginPath();compassCtx.moveTo(cx,cy-r*.42);compassCtx.lineTo(cx-6,cy+2);compassCtx.lineTo(cx+6,cy+2);compassCtx.closePath();compassCtx.fill();
+  compassCtx.fillStyle='rgba(208,232,255,0.35)';compassCtx.beginPath();compassCtx.moveTo(cx,cy+r*.42);compassCtx.lineTo(cx-6,cy-2);compassCtx.lineTo(cx+6,cy-2);compassCtx.closePath();compassCtx.fill();
+  compassCtx.fillStyle='#EEF4FF';compassCtx.beginPath();compassCtx.arc(cx,cy,8,0,Math.PI*2);compassCtx.fill();compassCtx.fillStyle='#1A3A6B';compassCtx.beginPath();compassCtx.arc(cx,cy,4,0,Math.PI*2);compassCtx.fill();
 }
 
-function updateRefDisplay(c, r) {
-  const ref  = LETTERS[c] + (r + 1);
-  const lm   = LM.find(([lc,lr]) => lc === c && lr === r);
-  const badge = document.getElementById('ref-badge');
-  const info  = document.getElementById('ref-info');
-  badge.textContent = ref;
-  if (lm) {
-    info.innerHTML = `<strong>${lm[2]} ${lm[3]}</strong> — ${TERRAIN_NAME[T[r][c]]} terrain`;
-  } else {
-    info.textContent = `${TERRAIN_EMOJI[T[r][c]]} ${TERRAIN_NAME[T[r][c]]} — square ${ref}`;
-  }
+// ── MINI MAP ────────────────────────────────────────────────────────────────
+function drawMinimap(){
+  const mmCvs=document.getElementById('minimap-canvas');const mmCtx=mmCvs.getContext('2d');
+  const mw=Math.min(mmCvs.parentElement.clientWidth||260,260);mmCvs.width=mw;mmCvs.height=Math.round(mw*ROWS/COLS);
+  drawMapOnCanvas(mmCvs,mmCtx,mw/(COLS*54));
 }
 
-mapCvs.addEventListener('mousemove', e => {
-  const cell = getCell(e);
-  if (cell) { updateRefDisplay(cell.c, cell.r); drawMap(cell.key); }
-});
-mapCvs.addEventListener('mouseleave', () => drawMap(null));
-mapCvs.addEventListener('click', e => {
-  const cell = getCell(e);
-  if (cell) { updateRefDisplay(cell.c, cell.r); checkGridTap(cell.c, cell.r); }
-});
-mapCvs.addEventListener('touchstart', e => {
-  e.preventDefault();
-  const cell = getCell(e);
-  if (cell) { updateRefDisplay(cell.c, cell.r); drawMap(cell.key); checkGridTap(cell.c, cell.r); }
-}, { passive: false });
-
-// ── Grid challenges ──────────────────────────────────────────────────────────
-const GRID_CHS = [
-  { q: 'Where is the Ship Landing? Tap its square on the map.',     target:[1,5] },
-  { q: 'Which square is the Treasure Cove in? Tap it!',             target:[7,3] },
-  { q: 'Tap the Forest Temple on the map.',                          target:[6,2] },
-  { q: 'Find the Village of Mango — tap its square.',               target:[2,3] },
-  { q: 'Where is the Rocky Peak? Tap the correct square.',          target:[4,2] },
-  { q: 'Tap any FOREST square (dark green terrain).',               targetTerrain:2 },
-  { q: 'Tap any RIVER square (light blue water).',                  targetTerrain:3 },
-  { q: 'Tap the square at grid reference D5.',                       target:[3,4] },
-  { q: 'Tap the square at grid reference F2.',                       target:[5,1] },
+// ── DIRECTION CHALLENGES ───────────────────────────────────────────────────
+const DIR_CHS=[
+  {q:'The Village (C4) is in which direction from the Ship (B6)?',ans:'North-East',opts:['North','North-East','East','South-East'],exp:'C4 is up (North) and right (East) of B6 → North-East.'},
+  {q:'The Treasure Cove (H4) is in which direction from the Rocky Peak (E3)?',ans:'East',opts:['North','East','South','West'],exp:'H4 is to the right of E3 on the same row → East.'},
+  {q:'You face North and turn 90° clockwise. You now face:',ans:'East',opts:['North','East','South','West'],exp:'90° clockwise from North = East.'},
+  {q:'You travel from E3 to E6. Which direction?',ans:'South',opts:['North','East','South','West'],exp:'Row 3 → row 6 = going down the map = South.'},
+  {q:'Which direction is to the left of East on a compass?',ans:'North',opts:['South','North','West','East'],exp:'Anti-clockwise from East = North.'},
+  {q:'The Temple (G3) is in which direction from the Village (C4)?',ans:'East',opts:['North','East','South','West'],exp:'G is to the right of C (same row approx) → East.'},
+  {q:'NE is exactly halfway between which two directions?',ans:'North and East',opts:['North and East','East and South','North and West','South and East'],exp:'NE = North-East, halfway between North and East.'},
+  {q:'You face East and turn 180°. You now face:',ans:'West',opts:['North','East','South','West'],exp:'180° from East = West (directly opposite).'},
 ];
-let gridIdx = 0, gridScore = 0, gridTotal = 0, awaitTap = false;
-
-function nextGridChallenge() {
-  if (gridIdx >= GRID_CHS.length) gridIdx = 0;
-  const ch = GRID_CHS[gridIdx];
-  awaitTap = true;
-  document.getElementById('grid-challenge').innerHTML =
-    `<div class="challenge-card">
-      <div class="ch-tag">Challenge ${gridIdx + 1} of ${GRID_CHS.length}</div>
-      <div class="ch-q">${ch.q}</div>
-      <div class="ch-fb" id="gfb"></div>
-    </div>`;
-}
-
-function checkGridTap(c, r) {
-  if (!awaitTap) return;
-  const ch  = GRID_CHS[gridIdx];
-  const fb  = document.getElementById('gfb');
-  if (!fb) return;
-  const ref = LETTERS[c] + (r + 1);
-  let ok = false;
-  if (ch.target && ch.target[0] === c && ch.target[1] === r) ok = true;
-  if (ch.targetTerrain !== undefined && T[r][c] === ch.targetTerrain) ok = true;
-  gridTotal++;
-  document.getElementById('grid-total').textContent = gridTotal;
-  if (ok) {
-    gridScore++;
-    document.getElementById('grid-score').textContent = gridScore;
-    fb.textContent = `✓ Correct! That is ${ref}.`;
-    fb.className = 'ch-fb ok';
-    awaitTap = false;
-    setTimeout(() => { gridIdx++; nextGridChallenge(); }, 1400);
-  } else {
-    fb.textContent = `✗ That is ${ref} — not quite. Check the letters (columns →) and numbers (rows ↓).`;
-    fb.className = 'ch-fb no';
-  }
-}
-
-// ── Compass (big) ────────────────────────────────────────────────────────────
-const compassCvs = document.getElementById('compass-canvas');
-const compassCtx  = compassCvs.getContext('2d');
-
-function drawCompass() {
-  const cx = 90, cy = 90, r = 82;
-  compassCtx.clearRect(0, 0, 180, 180);
-  // Ring
-  const grad = compassCtx.createRadialGradient(cx, cy, r*0.3, cx, cy, r);
-  grad.addColorStop(0, '#2A4A8A');
-  grad.addColorStop(1, '#0D2850');
-  compassCtx.fillStyle = grad;
-  compassCtx.beginPath(); compassCtx.arc(cx, cy, r, 0, Math.PI*2); compassCtx.fill();
-  compassCtx.strokeStyle = 'rgba(208,232,255,0.3)'; compassCtx.lineWidth = 2; compassCtx.stroke();
-
-  // Tick marks
-  for (let i = 0; i < 32; i++) {
-    const a = i * Math.PI*2 / 32;
-    const major = i % 4 === 0;
-    compassCtx.strokeStyle = major ? 'rgba(249,194,42,0.8)' : 'rgba(208,232,255,0.25)';
-    compassCtx.lineWidth = major ? 2 : 1;
-    compassCtx.beginPath();
-    compassCtx.moveTo(cx + Math.cos(a)*(r-2), cy + Math.sin(a)*(r-2));
-    compassCtx.lineTo(cx + Math.cos(a)*(major ? r-12 : r-7), cy + Math.sin(a)*(major ? r-12 : r-7));
-    compassCtx.stroke();
-  }
-
-  // Intercardinal labels (NE, SE, SW, NW)
-  [['NE',-Math.PI/4],['SE',Math.PI/4],['SW',3*Math.PI/4],['NW',-3*Math.PI/4]].forEach(([l,a]) => {
-    compassCtx.fillStyle = 'rgba(208,232,255,0.45)';
-    compassCtx.font = 'bold 10px "Space Mono",monospace';
-    compassCtx.textAlign = 'center'; compassCtx.textBaseline = 'middle';
-    compassCtx.fillText(l, cx + Math.cos(a)*(r-24), cy + Math.sin(a)*(r-24));
-  });
-
-  // Cardinal labels
-  [['N',-Math.PI/2,'#F9C22A',16],['S',Math.PI/2,'#EEF4FF',14],['E',0,'#EEF4FF',14],['W',Math.PI,'#EEF4FF',14]].forEach(([l,a,col,fs]) => {
-    compassCtx.fillStyle = col;
-    compassCtx.font = `bold ${fs}px "Space Mono",monospace`;
-    compassCtx.textAlign = 'center'; compassCtx.textBaseline = 'middle';
-    compassCtx.fillText(l, cx + Math.cos(a)*(r-26), cy + Math.sin(a)*(r-26));
-  });
-
-  // Needle — red north, dark south
-  compassCtx.fillStyle = '#E53935';
-  compassCtx.beginPath(); compassCtx.moveTo(cx, cy - r*0.44); compassCtx.lineTo(cx-7, cy+2); compassCtx.lineTo(cx+7, cy+2); compassCtx.closePath(); compassCtx.fill();
-  compassCtx.fillStyle = 'rgba(208,232,255,0.35)';
-  compassCtx.beginPath(); compassCtx.moveTo(cx, cy + r*0.44); compassCtx.lineTo(cx-7, cy-2); compassCtx.lineTo(cx+7, cy-2); compassCtx.closePath(); compassCtx.fill();
-
-  // Centre boss
-  compassCtx.fillStyle = '#EEF4FF';
-  compassCtx.beginPath(); compassCtx.arc(cx, cy, 9, 0, Math.PI*2); compassCtx.fill();
-  compassCtx.fillStyle = '#1A3A6B';
-  compassCtx.beginPath(); compassCtx.arc(cx, cy, 5, 0, Math.PI*2); compassCtx.fill();
-}
-
-// ── Direction challenges ──────────────────────────────────────────────────────
-const DIR_CHS = [
-  { q:'The Village (C4) is in which direction from the Ship (B6)?', ans:'North-East', opts:['North','North-East','East','South-East'], exp:'C4 is up (North) and right (East) of B6 — that is North-East.' },
-  { q:'The Treasure Cove (H4) is in which direction from the Rocky Peak (E3)?', ans:'East', opts:['North','East','South','West'], exp:'H4 is to the right of E3 on the same row — that is East.' },
-  { q:'You face North and turn 90° clockwise. You now face:', ans:'East', opts:['North','East','South','West'], exp:'90° clockwise from North = East.' },
-  { q:'You travel from E3 to E6. Which direction did you go?', ans:'South', opts:['North','East','South','West'], exp:'Row 3 → row 6 means going down the map — South.' },
-  { q:'Which direction is to the left of East on a compass?', ans:'North', opts:['South','North','West','East'], exp:'Going anti-clockwise (left) from East brings you to North.' },
-];
-let dirIdx = 0, dirScore = 0, dirTotal = 0;
-
-function renderDirChallenge() {
-  if (dirIdx >= DIR_CHS.length) dirIdx = 0;
-  const ch = DIR_CHS[dirIdx];
-  const c  = document.getElementById('dir-challenges'); c.innerHTML = '';
-  const div = document.createElement('div'); div.className = 'challenge-card';
-  div.innerHTML = `<div class="ch-tag">Direction challenge ${dirIdx+1} of ${DIR_CHS.length}</div>
-    <div class="ch-q">${ch.q}</div>
-    <div class="ch-opts" id="dir-opts"></div>
-    <div class="ch-fb" id="dir-fb"></div>`;
+let dirIdx=0,dirScore=0,dirTotal=0;
+function renderDirChallenge(){
+  if(dirIdx>=DIR_CHS.length)dirIdx=0;const ch=DIR_CHS[dirIdx];const c=document.getElementById('dir-challenges-content');c.innerHTML='';
+  const div=document.createElement('div');div.className='challenge-card';
+  div.innerHTML=`<div class="ch-tag">Direction challenge ${dirIdx+1} of ${DIR_CHS.length}</div><div class="ch-q">${ch.q}</div><div class="ch-opts" id="dir-opts"></div><div class="ch-fb" id="dir-fb"></div>`;
   c.appendChild(div);
-  [...ch.opts].forEach(o => {
-    const b = document.createElement('button'); b.className = 'ch-opt'; b.textContent = o;
-    b.onclick = () => {
-      div.querySelectorAll('.ch-opt').forEach(x => x.onclick = null);
-      const ok = o === ch.ans;
-      b.classList.add(ok ? 'correct' : 'wrong');
-      if (!ok) div.querySelectorAll('.ch-opt').forEach(x => { if (x.textContent === ch.ans) x.classList.add('correct'); });
-      const fb = document.getElementById('dir-fb');
-      fb.textContent = (ok ? '✓ ' : '✗ ') + ch.exp;
-      fb.className = 'ch-fb ' + (ok ? 'ok' : 'no');
-      dirTotal++; if (ok) dirScore++;
-      document.getElementById('dir-score').textContent = dirScore;
-      document.getElementById('dir-total').textContent = dirTotal;
-      if (ok) setTimeout(() => { dirIdx++; renderDirChallenge(); }, 1500);
-    };
+  [...ch.opts].forEach(o=>{
+    const b=document.createElement('button');b.className='ch-opt';b.textContent=o;
+    b.onclick=()=>{div.querySelectorAll('.ch-opt').forEach(x=>x.onclick=null);const ok=o===ch.ans;b.classList.add(ok?'correct':'wrong');if(!ok)div.querySelectorAll('.ch-opt').forEach(x=>{if(x.textContent===ch.ans)x.classList.add('correct')});
+    document.getElementById('dir-fb').textContent=(ok?'✓ ':'✗ ')+ch.exp;document.getElementById('dir-fb').className='ch-fb '+(ok?'ok':'no');
+    dirTotal++;if(ok)dirScore++;document.getElementById('dir-score').textContent=dirScore;document.getElementById('dir-total').textContent=dirTotal;
+    if(ok)setTimeout(()=>{dirIdx++;renderDirChallenge()},1500)};
     document.getElementById('dir-opts').appendChild(b);
   });
 }
 
-// ── Ruler ────────────────────────────────────────────────────────────────────
-const rulerCvs = document.getElementById('ruler-canvas');
-const rulerCtx  = rulerCvs.getContext('2d');
-
-function drawRuler() {
-  const pw = rulerCvs.parentElement.offsetWidth - 40;
-  rulerCvs.width  = Math.max(200, pw);
-  rulerCvs.height = 60;
-  const W = rulerCvs.width, H = 60;
-
-  rulerCtx.fillStyle = '#0D2850'; rulerCtx.fillRect(0, 0, W, H);
-
-  const segments = 10;
-  const segW = W / segments;
-  for (let i = 0; i < segments; i++) {
-    rulerCtx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)';
-    rulerCtx.fillRect(i * segW, 12, segW, 22);
-    // cm label
-    rulerCtx.fillStyle = 'rgba(208,232,255,0.7)';
-    rulerCtx.font = 'bold 10px "Space Mono",monospace';
-    rulerCtx.textAlign = 'center'; rulerCtx.textBaseline = 'middle';
-    rulerCtx.fillText(i + 'cm', i * segW + segW/2, 23);
-    // km equivalent
-    rulerCtx.fillStyle = '#F9C22A';
-    rulerCtx.font = 'bold 10px "Space Mono",monospace';
-    rulerCtx.fillText((i*2) + 'km', i * segW + segW/2, 42);
-    // tick mark at each cm
-    rulerCtx.strokeStyle = 'rgba(208,232,255,0.3)'; rulerCtx.lineWidth = 1;
-    rulerCtx.beginPath(); rulerCtx.moveTo(i*segW, 12); rulerCtx.lineTo(i*segW, 34); rulerCtx.stroke();
-  }
-  // Border line
-  rulerCtx.strokeStyle = 'rgba(208,232,255,0.2)'; rulerCtx.lineWidth = 1.5;
-  rulerCtx.strokeRect(0, 12, W, 22);
+function switchTab(t){
+  ['grid','directions'].forEach(x=>document.getElementById('pnl-'+x).classList.toggle('on',x===t));
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['grid','directions'][i]===t));
+  if(t==='grid')initMap();
+  if(t==='directions'){drawCompass();drawMinimap();renderDirChallenge()}
 }
-
-// ── Scale challenges ─────────────────────────────────────────────────────────
-const SCALE_CHS = [
-  { q:'Two villages are 3 cm apart on the map. How far in real life? (Scale: 1 cm = 2 km)', ans:'6 km',  opts:['3 km','4 km','6 km','9 km'],        exp:'3 × 2 = 6 km.' },
-  { q:'A river is 8 km long in real life. How long on this map? (Scale: 1 cm = 2 km)',      ans:'4 cm',  opts:['2 cm','4 cm','8 cm','16 cm'],       exp:'8 ÷ 2 = 4 cm on the map.' },
-  { q:'The ship is 5 cm from the treasure. Scale: 1 cm = 2 km. Real distance?',             ans:'10 km', opts:['5 km','8 km','10 km','25 km'],      exp:'5 × 2 = 10 km.' },
-  { q:'Two towns are 12 km apart. Scale: 1 cm = 3 km. Map distance?',                       ans:'4 cm',  opts:['3 cm','4 cm','6 cm','12 cm'],       exp:'12 ÷ 3 = 4 cm.' },
-  { q:'On a 1:50 000 map, 2 cm represents how many metres?',                                ans:'1000 m',opts:['500 m','1000 m','2000 m','5000 m'], exp:'2 × 50 000 = 100 000 cm = 1000 m.' },
-];
-let scaleIdx = 0, scaleScore = 0, scaleTotal = 0;
-
-function renderScaleChallenge() {
-  if (scaleIdx >= SCALE_CHS.length) scaleIdx = 0;
-  const ch = SCALE_CHS[scaleIdx];
-  const c  = document.getElementById('scale-challenges'); c.innerHTML = '';
-  const div = document.createElement('div'); div.className = 'challenge-card';
-  div.innerHTML = `<div class="ch-tag">Scale challenge ${scaleIdx+1} of ${SCALE_CHS.length}</div>
-    <div class="ch-q">${ch.q}</div>
-    <div class="ch-opts" id="sc-opts"></div>
-    <div class="ch-fb" id="sc-fb"></div>`;
-  c.appendChild(div);
-  [...ch.opts].forEach(o => {
-    const b = document.createElement('button'); b.className = 'ch-opt'; b.textContent = o;
-    b.onclick = () => {
-      div.querySelectorAll('.ch-opt').forEach(x => x.onclick = null);
-      const ok = o === ch.ans;
-      b.classList.add(ok ? 'correct' : 'wrong');
-      if (!ok) div.querySelectorAll('.ch-opt').forEach(x => { if (x.textContent === ch.ans) x.classList.add('correct'); });
-      document.getElementById('sc-fb').textContent = (ok ? '✓ ' : '✗ ') + ch.exp;
-      document.getElementById('sc-fb').className = 'ch-fb ' + (ok ? 'ok' : 'no');
-      scaleTotal++; if (ok) scaleScore++;
-      document.getElementById('sc-score').textContent = scaleScore;
-      document.getElementById('sc-total').textContent = scaleTotal;
-      if (ok) setTimeout(() => { scaleIdx++; renderScaleChallenge(); }, 1500);
-    };
-    document.getElementById('sc-opts').appendChild(b);
-  });
-}
-
-// ── Practice ──────────────────────────────────────────────────────────────────
-const Qs = [
-  { q:'On a grid map, the letter in a reference (e.g. "C") tells you:', ans:'The column (left–right)', opts:['The row (up–down)','The column (left–right)','The scale','The terrain'], exp:'Letters label columns across the map. Numbers label rows down.' },
-  { q:'Which direction is directly opposite North?', ans:'South', opts:['East','West','South','North-East'], exp:'North and South are directly opposite on a compass.' },
-  { q:'A map scale says 1 cm = 5 km. Two towns are 4 cm apart. How far in real life?', ans:'20 km', opts:['5 km','10 km','20 km','40 km'], exp:'4 × 5 = 20 km.' },
-  { q:'You face East and turn 90° anti-clockwise. You now face:', ans:'North', opts:['South','North','West','East'], exp:'From East, turning anti-clockwise (left) 90° = facing North.' },
-  { q:'In the grid reference E3, what does the number "3" mean?', ans:'Row 3 (third row down)', opts:['Column 3','Row 3 (third row down)','3 km from centre','Third landmark'], exp:'Letters = columns (across), numbers = rows (down). "3" = third row.' },
-  { q:'On a 1:100 000 map, 3 cm on the map equals how many km?', ans:'3 km', opts:['1 km','3 km','30 km','300 km'], exp:'3 × 100 000 = 300 000 cm = 3000 m = 3 km.' },
-  { q:'NE is halfway between which two cardinal directions?', ans:'North and East', opts:['North and East','East and South','South and West','North and West'], exp:'NE = North-East, exactly between North and East.' },
-  { q:'The scale on a map is 1 cm = 4 km. A road is 6 cm on the map. Real length?', ans:'24 km', opts:['6 km','10 km','24 km','48 km'], exp:'6 × 4 = 24 km.' },
-];
-let pqUsed = [];
-function nextPQ() {
-  if (pqUsed.length >= Qs.length) pqUsed = [];
-  let idx; do { idx = Math.floor(Math.random() * Qs.length); } while (pqUsed.includes(idx));
-  pqUsed.push(idx);
-  const q = Qs[idx];
-  document.getElementById('pq-text').textContent = q.q;
-  document.getElementById('pq-fb').textContent = '';
-  document.getElementById('pq-fb').className = 'pq-fb';
-  const opts = document.getElementById('pq-opts'); opts.innerHTML = '';
-  [...q.opts].sort(() => Math.random() - .5).forEach(o => {
-    const b = document.createElement('button'); b.className = 'ans-opt'; b.textContent = o;
-    b.onclick = () => {
-      opts.querySelectorAll('.ans-opt').forEach(x => x.onclick = null);
-      const ok = o === q.ans;
-      b.classList.add(ok ? 'correct' : 'wrong');
-      if (!ok) opts.querySelectorAll('.ans-opt').forEach(x => { if (x.textContent === q.ans) x.classList.add('correct'); });
-      document.getElementById('pq-fb').textContent = (ok ? '✓ Correct! ' : '✗ Not quite. ') + q.exp;
-      document.getElementById('pq-fb').className = 'pq-fb ' + (ok ? 'ok' : 'no');
-    };
-    opts.appendChild(b);
-  });
-}
-
-// ── Tab switch ────────────────────────────────────────────────────────────────
-function switchTab(t) {
-  ['grid','directions','scale','practice'].forEach(x =>
-    document.getElementById('pnl-' + x).classList.toggle('on', x === t));
-  document.querySelectorAll('.tab').forEach((b, i) =>
-    b.classList.toggle('on', ['grid','directions','scale','practice'][i] === t));
-  if (t === 'practice')   nextPQ();
-  if (t === 'grid')       initMap();
-  if (t === 'directions') drawCompass();
-  if (t === 'scale')      { drawRuler(); renderScaleChallenge(); }
-}
-
-window.addEventListener('resize', () => {
-  if (document.getElementById('pnl-grid').classList.contains('on'))  initMap();
-  if (document.getElementById('pnl-scale').classList.contains('on')) { drawRuler(); }
-});
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-initMap();
-nextGridChallenge();
-drawCompass();
-renderDirChallenge();
-drawRuler();
-renderScaleChallenge();
-nextPQ();
+window.addEventListener('resize',()=>{if(document.getElementById('pnl-grid').classList.contains('on'))initMap();if(document.getElementById('pnl-directions').classList.contains('on'))drawMinimap()});
+initMap();nextGridChallenge();drawCompass();drawMinimap();renderDirChallenge();
 </script>
 </body>
 </html>
